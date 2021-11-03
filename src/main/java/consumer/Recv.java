@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public class Recv {
     private final static String QUEUE_NAME = "skierQueue";
     private final static ConcurrentHashMap<Integer, List<Integer>> map = new ConcurrentHashMap<>();
+    private final static int NUMBER_THREAD = 64;
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -34,7 +35,7 @@ public class Recv {
                     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                         String message = new String(delivery.getBody(), "UTF-8");
                         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                        System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
+                        // System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
                         String[] result = message.split(",");
                         int liftId = Integer.valueOf(result[0]);
                         int skierId = Integer.valueOf(result[1]);
@@ -50,14 +51,10 @@ public class Recv {
                 }
             }
         };
-        // start threads and block to receive messages
-        Thread recv1 = new Thread(runnable);
-        Thread recv2 = new Thread(runnable);
-//        Thread recv3 = new Thread(runnable);
-//        Thread recv4 = new Thread(runnable);
-        recv1.start();
-        recv2.start();
-//        recv3.start();
-//        recv4.start();
+
+        for (int i = 0; i < NUMBER_THREAD; i++) {
+            Thread recv = new Thread(runnable);
+            recv.start();
+        }
     }
 }
