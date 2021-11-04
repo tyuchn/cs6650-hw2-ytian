@@ -100,7 +100,7 @@ public class SkierClient {
             String argument = args[i];
             String value = args[i + 1];
             if ("-numThreads".equals(argument)) {
-                if (Integer.valueOf(value) <= 0 || Integer.valueOf(value) > 256) {
+                if (Integer.valueOf(value) <= 0 || Integer.valueOf(value) > 512) {
                     throw new IllegalArgumentException("numThreads - max 256");
                 } else {
                     threads = Integer.valueOf(value);
