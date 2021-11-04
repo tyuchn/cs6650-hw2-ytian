@@ -36,7 +36,7 @@ public class ClientThread implements Runnable {
     }
 
     private void sendPostRequest(int skierID, int liftID, int time) throws UnsupportedEncodingException {
-        String url = String.format("http://%s/cs6650_hw2_war_exploded/skiers/%d/seasons/2019/days/1/skiers/123", this.client.getPort(), skierID);
+        String url = String.format("http://%s/cs6650-hw2_war/skiers/%d/seasons/2019/days/1/skiers/123", this.client.getPort(), skierID);
         PostMethod method = new PostMethod(url);
 
         // Provide custom retry handler is necessary
