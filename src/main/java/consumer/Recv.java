@@ -20,7 +20,10 @@ public class Recv {
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost("35.171.160.230");
+        factory.setPort(5672);
+        factory.setUsername("guest1");
+        factory.setPassword("guest1");
         final Connection connection = factory.newConnection();
 
         Runnable runnable = new Runnable() {
@@ -35,7 +38,7 @@ public class Recv {
                     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                         String message = new String(delivery.getBody(), "UTF-8");
                         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                        // System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
+                        System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
                         String[] result = message.split(",");
                         int liftId = Integer.valueOf(result[0]);
                         int skierId = Integer.valueOf(result[1]);

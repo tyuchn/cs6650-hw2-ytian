@@ -1,38 +1,27 @@
+
 package server;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import model.LiftRide;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @javax.servlet.annotation.WebServlet(name = "server.SkierServlet")
 public class SkierServlet extends javax.servlet.http.HttpServlet {
     private final static String QUEUE_NAME = "skierQueue";
-    private Connection connection;
+    private GenericObjectPool<Channel> channelPool;
 
 
     @Override
     public void init() throws ServletException {
-        super.init();
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-
-        try {
-            connection = factory.newConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
+        this.channelPool = new GenericObjectPool<>(new ChannelFactory());
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -64,16 +53,21 @@ public class SkierServlet extends javax.servlet.http.HttpServlet {
             } else {
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 response.getWriter().write("Post " + urlPath + ' ' + liftRide.toString());
-                // create a channel and use that to publish to RabbitMQ. Close it at end of the request.
-                Channel channel = connection.createChannel();
-                channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-                // send lift id and skier id to the message queue
-                String message = String.valueOf(liftRide.getLiftID()) + ',' + urlParts[7];
-                channel.basicPublish("", QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
-                System.out.println(" [x] Sent '" + message + "'");
                 try {
-                    channel.close();
+                    Producer producer = new Producer(this.channelPool);
                 } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
+                // create a channel and use that to publish to RabbitMQ. Close it at end of the request.
+                try {
+                    Producer producer = new Producer(this.channelPool);
+                    // send lift id and skier id to the message queue
+                    String message = String.valueOf(liftRide.getLiftID()) + ',' + urlParts[7];
+                    producer.produce(message);
+                    System.out.println(" [x] Sent '" + message + "'");
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -148,3 +142,4 @@ public class SkierServlet extends javax.servlet.http.HttpServlet {
     }
 
 }
+
