@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import model.LiftRide;
+import model.LiftRideRequest;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -35,16 +36,17 @@ public class ClientThread implements Runnable {
         this.httpClient = new HttpClient();
     }
 
-    private void sendPostRequest(int skierID, int liftID, int time) throws UnsupportedEncodingException {
-        String url = String.format("http://%s/cs6650-hw2_war/skiers/%d/seasons/2019/days/1/skiers/123", this.client.getPort(), skierID);
+    private void sendPostRequest(int skierId, int liftId, int time) throws UnsupportedEncodingException {
+        String url = String.format("http://%s/cs6650-hw2_war/skiers/123/seasons/2019/days/1/skiers/%d", this.client.getPort(), skierId);
         PostMethod method = new PostMethod(url);
 
         // Provide custom retry handler is necessary
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
                 new DefaultHttpMethodRetryHandler(5, false));
 
-        LiftRide liftRide = new LiftRide(time, liftID);
-        String json = new Gson().toJson(liftRide);
+        // skierId, resortId, seasonId, dayId, time, liftId
+        LiftRideRequest liftRideRequest = new LiftRideRequest(time, liftId);
+        String json = new Gson().toJson(liftRideRequest);
         StringRequestEntity requestEntity = new StringRequestEntity(
                 json,
                 "application/json",

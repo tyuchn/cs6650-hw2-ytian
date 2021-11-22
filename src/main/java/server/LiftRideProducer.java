@@ -1,20 +1,17 @@
 package server;
 
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
-public class Producer {
+public class LiftRideProducer {
     private final static String QUEUE_NAME = "skierQueue";
     private ObjectPool<Channel> pool;
 
-    public Producer(ObjectPool<Channel> pool) throws IOException, TimeoutException {
+    public LiftRideProducer(ObjectPool<Channel> pool) throws IOException, TimeoutException {
         this.pool = pool;
     }
 
