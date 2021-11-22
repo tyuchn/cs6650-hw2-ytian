@@ -50,9 +50,9 @@ public class SkierRecv {
                         int time = Integer.valueOf(result[4]);
                         int liftId = Integer.valueOf(result[5]);
                         // update hashmap
-                        List<Integer> list = map.getOrDefault(skierId, Collections.synchronizedList(new ArrayList<Integer>()));
-                        list.add(liftId);
-                        map.put(skierId, list);
+//                        List<Integer> list = map.getOrDefault(skierId, Collections.synchronizedList(new ArrayList<Integer>()));
+//                        list.add(liftId);
+//                        map.put(skierId, list);
                         // add record into db
                         LiftRideDao liftRideDao = new LiftRideDao();
                         liftRideDao.createLiftRide(new LiftRide(skierId, resortId, seasonId, dayId, time, liftId));
