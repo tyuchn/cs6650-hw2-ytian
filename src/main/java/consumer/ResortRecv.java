@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class ResortRecv {
     private final static String QUEUE_NAME = "resortQueue";
-    private final static int NUMBER_THREAD = 4;
+    private final static int NUMBER_THREAD = 128;
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();

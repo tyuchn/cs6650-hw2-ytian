@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class SkierRecv {
     private final static String QUEUE_NAME = "skierQueue";
     private final static ConcurrentHashMap<Integer, List<Integer>> map = new ConcurrentHashMap<>();
-    private final static int NUMBER_THREAD = 4;
+    private final static int NUMBER_THREAD = 128;
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
