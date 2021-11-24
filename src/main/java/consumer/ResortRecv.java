@@ -8,12 +8,13 @@ import dal.ResortDao;
 import model.Resort;
 
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ResortRecv {
     private final static String QUEUE_NAME = "resortQueue";
-    private final static int NUMBER_THREAD = 128;
+    private final static int NUMBER_THREAD = 256;
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -38,16 +39,21 @@ public class ResortRecv {
                         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                         System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
                         String[] result = message.split(",");
-                        int year = Integer.valueOf(result[0]);
+                        int year = ThreadLocalRandom.current().nextInt(2000, 2022);
+                        int skierId = Integer.valueOf(result[0]);
                         int resortId = Integer.valueOf(result[1]);
+                        int seasonId = Integer.valueOf(result[2]);
+                        int dayId = Integer.valueOf(result[3]);
+                        int time = Integer.valueOf(result[4]);
+                        int liftId = Integer.valueOf(result[5]);
                         // add record into db
                         ResortDao resortDao = new ResortDao();
-                        resortDao.createResort(new Resort(year, resortId));
+                        resortDao.createResort(new Resort(dayId, year, time, resortId, skierId, liftId));
                     };
                     // process messages
                     channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });
                 } catch (IOException ex) {
-                    Logger.getLogger(SkierRecv.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ResortRecv.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         };

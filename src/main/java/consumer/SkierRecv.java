@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class SkierRecv {
     private final static String QUEUE_NAME = "skierQueue";
     private final static ConcurrentHashMap<Integer, List<Integer>> map = new ConcurrentHashMap<>();
-    private final static int NUMBER_THREAD = 128;
+    private final static int NUMBER_THREAD = 256;
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -44,8 +44,8 @@ public class SkierRecv {
                         System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
                         String[] result = message.split(",");
                         int skierId = Integer.valueOf(result[0]);
-                        int resortId = Integer.valueOf(result[1]);
-                        int seasonId = Integer.valueOf(result[2]);
+//                        int resortId = Integer.valueOf(result[1]);
+//                        int seasonId = Integer.valueOf(result[2]);
                         int dayId = Integer.valueOf(result[3]);
                         int time = Integer.valueOf(result[4]);
                         int liftId = Integer.valueOf(result[5]);
@@ -55,7 +55,7 @@ public class SkierRecv {
 //                        map.put(skierId, list);
                         // add record into db
                         LiftRideDao liftRideDao = new LiftRideDao();
-                        liftRideDao.createLiftRide(new LiftRide(skierId, resortId, seasonId, dayId, time, liftId));
+                        liftRideDao.createLiftRide(new LiftRide(skierId, dayId, time, liftId));
                     };
                     // process messages
                     channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });

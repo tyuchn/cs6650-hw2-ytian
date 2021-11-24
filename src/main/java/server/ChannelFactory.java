@@ -14,11 +14,11 @@ public class ChannelFactory extends BasePooledObjectFactory<Channel> {
 
     public ChannelFactory() {
         ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("35.171.160.230");
-//        factory.setPort(5672);
-//        factory.setUsername("guest1");
-//        factory.setPassword("guest1");
-        factory.setHost("localhost");
+        factory.setHost("35.171.160.230");
+        factory.setPort(5672);
+        factory.setUsername("guest1");
+        factory.setPassword("guest1");
+        //factory.setHost("localhost");
         try {
             connection = factory.newConnection();
         } catch (IOException e) {
